@@ -1,0 +1,24 @@
+body {
+  height: 100vh;
+}
+
+h1 {
+  font-size: 3rem;
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.btn-container {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+
+#error-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
