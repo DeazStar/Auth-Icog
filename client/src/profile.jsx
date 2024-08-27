@@ -77,7 +77,7 @@ export default function Profile() {
       if (data.status === "success") {
         const accessToken = response.headers["authorization"];
         Cookies.set("token", accessToken, {
-          expires: import.meta.env.VITE_COOKIE_EXPIRES_IN / 1440,
+          expires: parseInt(import.meta.env.VITE_COOKIE_EXPIRES_IN_DAYS),
         });
 
         fetchUserProfile();
@@ -97,7 +97,7 @@ export default function Profile() {
       setIsLoading(true);
       const token = Cookies.get("token");
 
-      if (!token) window.location = "/login";
+      if (!token) navigate("/login");
       const response = await axios.get(url, {
         headers: {
           Authorization: `${token}`,
@@ -112,7 +112,7 @@ export default function Profile() {
       setEmail(data.user.email);
     } catch (e) {
       const error = e.response.data;
-      if (error.message === "Unautorized") window.location = "/login";
+      if (error.message === "Unautorized") navigate("/login");
 
       if (error.message === "Token is not valid") {
         const refreshToken = Cookies.get("refreshToken");
