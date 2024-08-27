@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   FormControl,
   FormLabel,
@@ -11,14 +12,68 @@ import {
   Flex,
   CardFooter,
   Link,
-  Box,
+  Alert,
+  AlertIcon,
+  AlertTitle,
 } from "@chakra-ui/react";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
 import Oauth from "./oauth.jsx";
 import "./index.css";
+import axios from "axios";
+import BASE_URL from "./utils/apis.js";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+
+  async function handleLogin() {
+    const url = `${BASE_URL}/auth/login`;
+    setError(null);
+    if (!email || !password) {
+      setError("All Fileds are required");
+      return;
+    }
+
+    if (error) return;
+
+    try {
+      const response = await axios.post(
+        url,
+        {
+          email: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+          credentials: "include",
+        },
+      );
+      const data = response.data;
+
+      if (data.status === "success") {
+        const accessToken = response.headers["authorization"];
+        const refreshToken = response.headers["x-refresh-token"];
+        Cookies.set("token", accessToken, {
+          expires: parseInt(import.meta.env.VITE_COOKIE_EXPIRES_IN_DAYS),
+        });
+
+        const time = parseInt(import.meta.env.VITE_COOKIE_EXPIRES_IN_DAYS);
+        Cookies.set("refreshToken", refreshToken, {
+          expires: time,
+        });
+        console.log("redirecting");
+        navigate("/profile");
+      } else {
+        setError("Opps something went wrong");
+      }
+    } catch (err) {
+      const error = err.response.data;
+      setError(error.message);
+    }
+  }
   return (
     <Flex
       height="100vh"
@@ -39,20 +94,44 @@ export default function Login() {
           </Flex>
           <FormControl>
             <FormLabel mt={4}>Email</FormLabel>
-            <Input type="email" />
+            <Input
+              type="email"
+              id="email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
             <FormLabel mt={4}>Password</FormLabel>
-            <Input type="password" />
-            <Button mt={4} colorScheme="teal" type="submit">
+            <Input
+              type="password"
+              id="password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button
+              mt={4}
+              colorScheme="teal"
+              type="submit"
+              onClick={(e) => {
+                console.log("handling login");
+                e.preventDefault();
+                handleLogin();
+              }}
+            >
               Log in
             </Button>
           </FormControl>
         </CardBody>
 
-        <CardFooter>
+        <CardFooter flexDirection="column">
+          {error && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>{error}</AlertTitle>
+            </Alert>
+          )}
+
           <p>
             Don't have an account{" "}
             <Link color="teal" href="/signup">
-              sing up
+              sign up
             </Link>
           </p>
         </CardFooter>

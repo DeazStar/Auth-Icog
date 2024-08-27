@@ -9,6 +9,7 @@ import ErrorPage from "./error-page.jsx";
 import Singup from "./signup.jsx";
 import Login from "./login.jsx";
 import Profile from "./profile.jsx";
+import OauthRedirect from "./redirect.jsx";
 
 const router = createBrowserRouter([
   {
@@ -29,8 +30,13 @@ const router = createBrowserRouter([
   {
     path: "/profile",
     element: <Profile />,
-    errorElement: <ErrorPage />
-  }
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/redirect",
+    element: <OauthRedirect />,
+    errorElement: <ErrorPage />,
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
