@@ -1,5 +1,5 @@
 # Auth-Icog
-## NOTE: i just used the logic of /verify route as a middleware i don't think a separate route for verifying the integrity of the token is usefull if we already have a middleware that protect the some routes.
+## NOTE: i just used the logic of /verify route as a middleware i don't think a separate route for verifying the integrity of the token is usefull if we already have a middleware that protect some routes.
 
 ## HOW TO USE
 * inside server directory .env file
