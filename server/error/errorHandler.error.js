@@ -1,6 +1,8 @@
 import AppError from "./AppError.error.js";
 
 function sendDevError(err, res) {
+  console.log("sending error");
+  console.log(err);
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,

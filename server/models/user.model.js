@@ -20,13 +20,27 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: [true, "Password is required"],
-    min: 8,
+    minlength: [8, "Password must be at least 8 characters"],
+    // `select: false` will prevent the password from being returned in queries unless explicitly selected.
+    select: false,
+  },
+  openId: {
+    type: String,
   },
 });
 
+// Custom validation for the password field
+userSchema.path("password").validate(function (value) {
+  // If the authType is 'local', the password field is required
+  if (this.openId) {
+    return value && value.length >= 8;
+  }
+  // If the authType is 'oauth', the password is not required
+  return true;
+}, "Password is required");
+
 userSchema.pre("save", async function (next) {
-  if (this.isModified("password") || this.isNew) {
+  if ((this.isModified("password") || this.isNew) && this.password) {
     try {
       this.password = await bcrypt.hash(this.password, 12);
     } catch (err) {
